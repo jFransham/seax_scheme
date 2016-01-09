@@ -1,11 +1,7 @@
 #![crate_name = "seax_scheme"]
-#![unstable(feature="scheme")]
 #![crate_type = "lib"]
 #![feature(box_syntax,box_patterns)]
 #![feature(slice_patterns)]
-#![feature(staged_api)]
-#![feature(scheme, parser)]
-#![staged_api]
 
 //! Library for compiling Scheme programs to Seax SVM bytecode.
 //!
@@ -38,7 +34,6 @@ use std::iter::FromIterator;
 /// program, and is responsible for compiling those programs
 /// to SVM bytecode instructions, performing semantic analysis
 /// (as necessary), and (eventually) for optimizing programs.
-#[unstable(feature = "ast")]
 pub use ast::*;
 
 /// Contains the Scheme parser.
@@ -50,7 +45,6 @@ pub use ast::*;
 /// Any deviations from the R6RS standard, especially those with an impact
 /// on the valid programs accepted by the parser, will be noted in the
 /// parser's RustDoc.
-#[unstable(feature="parser")]
 pub use parser::*;
 
 /// Compile a Scheme program into a list of SVM cells (a control stack)
@@ -66,7 +60,6 @@ pub use parser::*;
 ///    occured during compilation
 ///
 /// TODO: Should this return a list of errors instead?
-#[unstable(feature="compile")]
 pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
     parser::parse(program)
         .and_then(|tree: ExprNode     | {

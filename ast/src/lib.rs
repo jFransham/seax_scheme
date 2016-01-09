@@ -1,12 +1,8 @@
 #![crate_name = "ast"]
-#![unstable(feature="scheme")]
 #![crate_type = "lib"]
 #![feature(convert)]
 #![feature(box_syntax,box_patterns)]
-#![feature(vec_push_all)]
 #![feature(slice_patterns)]
-#![feature(staged_api)]
-#![staged_api]
 
 #[macro_use] extern crate seax_util as seax;
 
@@ -47,40 +43,26 @@ use std::convert::Into;
 ///  TODO: macros should happen
 ///  TODO: figure out quasiquote somehow.
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub enum ExprNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     Root(RootNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     SExpr(SExprNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     Name(NameNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     ListConst(ListNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     NumConst(NumNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     BoolConst(BoolNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     StringConst(StringNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     CharConst(CharNode),
 }
 
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub enum NumNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     IntConst(IntNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     UIntConst(UIntNode),
-    #[stable(feature = "ast", since = "0.0.2")]
     FloatConst(FloatNode)
 }
 
 /// AST node for the root of a program's AST
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 
@@ -89,29 +71,23 @@ pub struct RootNode { pub exprs: Vec<ExprNode> }
 /// This includes function application, assignment,
 /// function definition, et cetera...Scheme is not a complexl anguage.
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct SExprNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub operator: Box<ExprNode>,
-    #[stable(feature = "ast", since = "0.0.2")]
     pub operands: Vec<ExprNode>,
 }
 
 /// AST node for a list literal
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 
 /// AST node for an identifier
 #[derive(Clone, PartialEq)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct NameNode { pub name: String }
 
 impl NameNode {
     /// Returns true if this is a keyword
     #[inline]
-    #[stable(feature = "ast", since = "0.0.3")]
     fn is_kw(&self) -> bool {
         match self.name.as_ref() {
             "access" | "define-syntax" | "macro"  | "and"  | "delay"
@@ -128,7 +104,6 @@ impl NameNode {
     }
     /// Returns true if this is an arithmetic operator
     #[inline]
-    #[stable(feature = "ast", since = "0.0.3")]
     fn is_arith(&self) -> bool {
       match self.name.as_ref() {
          "+" | "-" | "*" | "/" | "%" => true,
@@ -137,7 +112,6 @@ impl NameNode {
    }
     /// Returns true if this is a comparison operator
     #[inline]
-    #[stable(feature = "ast", since = "0.0.3")]
     fn is_cmp(&self) -> bool {
       match self.name.as_ref() {
          "=" | "!=" | ">" | "<" | ">=" | "<=" => true,
@@ -145,66 +119,52 @@ impl NameNode {
       }
    }
 
-   #[stable(feature = "ast", since = "0.0.4")]
    pub fn new(name: String) -> Self { NameNode {name: name} }
 }
 
 /// AST node for an integer constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct IntNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub value: i64
 }
 
 /// AST node for an unsigned integer constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct UIntNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub value: u64
 }
 
 /// AST node for a floating-point constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct FloatNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub value: f64
 }
 
 /// AST node for a boolean constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct BoolNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub value: bool
 }
 
 /// AST node for a character constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct CharNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     pub value: char
 }
 
 /// AST node for a  string constant
 #[derive(Clone, PartialEq,Debug)]
-#[stable(feature = "ast", since = "0.0.2")]
 pub struct StringNode { pub value: String }
 
 #[cfg(test)]
 mod tests;
 
 impl ASTNode for RootNode {
-    #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut result = String::new();
         for expr in &self.exprs {
@@ -223,7 +183,6 @@ impl fmt::Debug for RootNode {
 
 impl ASTNode for ExprNode {
 
-    #[stable(feature = "compile", since = "0.0.3")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         match *self {
             //  TODO: should some of these nodes cause a state fork?
@@ -238,7 +197,6 @@ impl ASTNode for ExprNode {
         }
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         match *self {
             Root(ref node)          => node.print_level(level),
@@ -268,7 +226,6 @@ impl ASTNode for SExprNode {
     /// ... everything.
     ///
     /// Abandon all hope, ye who enter here.
-    #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         // TODO: break this monster apart into sub-functions
         // because this is a wretched abomination of cyclomatic complexity
@@ -346,7 +303,7 @@ impl ASTNode for SExprNode {
                                 sym.bind(node.name.as_ref(),depth);
 
                                 for exp in param_body {
-                                    result.push_all(&try!(exp.compile(&sym)));
+                                    result.extend_from_slice(&try!(exp.compile(&sym)));
                                 }
 
                                 result.push(InstCell(CONS));
@@ -364,7 +321,7 @@ impl ASTNode for SExprNode {
                                     sym.bind(node.name.as_ref(),depth);
 
                                     for ref exp in param_body {
-                                        result.push_all(&try!(exp.compile(&sym)));
+                                        result.extend_from_slice(&try!(exp.compile(&sym)));
                                     }
 
                                     result.push(InstCell(CONS));
@@ -375,7 +332,7 @@ impl ASTNode for SExprNode {
                             body_exp.compile(&sym)
                                 .map(|mut x| { x.push(InstCell(RET)); x })
                                 .map(|code | {
-                                    result.push_all(&[
+                                    result.extend_from_slice(&[
                                         InstCell(LDF),
                                         ListCell(box List::from_iter(code)),
                                         InstCell(AP)
@@ -392,17 +349,17 @@ impl ASTNode for SExprNode {
                     let mut result = Vec::new();
                     match self.operands {
                         ref other if other.len() == 1 => {
-                            result.push_all( &try!(other[0].compile(state)) );
-                            result.push_all( &try!(op.compile(state)) );
+                            result.extend_from_slice( &try!(other[0].compile(state)) );
+                            result.extend_from_slice( &try!(op.compile(state)) );
                         },
                         _       => {
                             let mut it = self.operands.iter().rev();
                             // TODO: can thsi be represented with a reduce/fold?
-                            result.push_all(&try!(
+                            result.extend_from_slice(&try!(
                                 it.next().unwrap().compile(state)));
                             for ref operand in it {
-                                result.push_all(&try!(operand.compile(state)));
-                                result.push_all(&try!(op.compile(state)));
+                                result.extend_from_slice(&try!(operand.compile(state)));
+                                result.extend_from_slice(&try!(op.compile(state)));
                             }
                         }
                     }
@@ -414,22 +371,22 @@ impl ASTNode for SExprNode {
                 match self.operands {
                     ref other if other.len() == 1 => { // just an optimization
                         result.push(InstCell(NIL));
-                        result.push_all( &try!(other[0].compile(state)) );
+                        result.extend_from_slice( &try!(other[0].compile(state)) );
                         result.push(InstCell(CONS));
-                        result.push_all( &try!(op.compile(state)) );
+                        result.extend_from_slice( &try!(op.compile(state)) );
                         result.push(InstCell(AP));
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
                         // TODO: can thsi be represented with a reduce/fold?
                         result.push(InstCell(NIL));
-                        result.push_all(&try!(
+                        result.extend_from_slice(&try!(
                             it.next().unwrap().compile(state)));
                         for ref operand in it {
                             result.push(InstCell(CONS));
-                            result.push_all(&try!(operand.compile(state)));
+                            result.extend_from_slice(&try!(operand.compile(state)));
                             result.push(InstCell(CONS));
-                            result.push_all(&try!(op.compile(state)));
+                            result.extend_from_slice(&try!(op.compile(state)));
                             result.push(InstCell(AP));
                         }
                     }
@@ -440,7 +397,6 @@ impl ASTNode for SExprNode {
 
     }
 
-    #[stable(feature = "ast", since = "0.0.6")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level { tab.push_str(INDENT); };
@@ -466,7 +422,6 @@ impl ASTNode for SExprNode {
 
 impl SExprNode {
     /// Tests to see if this node is a binding expression
-    #[stable(feature = "compile",since = "0.1.1")]
     fn is_bind(&self) -> bool {
         // I wish I didn't have to do it this way, there's an apparent
         // Rust issue (rust-lang/rust#23762) that makes it impossible
@@ -489,7 +444,6 @@ impl SExprNode {
     /// closure with nested clsures, since we want to associate the names bound
     /// in the top level of the closure with the lowest level of the stack at
     /// evaluation time.
-    #[stable(feature = "compile",since = "0.1.0")]
     fn depth(&self)     -> u64 {
         self.operands.iter().fold(
             match *self.operator {
@@ -504,22 +458,18 @@ impl SExprNode {
     }
 }
 
-#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for SExprNode {
-    #[stable(feature = "ast", since = "0.0.2")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
 }
 
 impl ASTNode for ListNode {
-    #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT); };
@@ -537,16 +487,13 @@ impl ASTNode for ListNode {
 
 }
 
-#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for ListNode {
-    #[stable(feature = "ast", since = "0.0.4")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
 }
 
 impl ASTNode for NameNode {
-    #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         match self.name.as_ref() {
             "cons"  => Ok(vec![InstCell(CONS)]),
@@ -577,7 +524,6 @@ impl ASTNode for NameNode {
         }
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT)};
@@ -587,9 +533,7 @@ impl ASTNode for NameNode {
 
 }
 
-#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for NameNode {
-    #[stable(feature = "ast", since = "0.0.4")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
@@ -597,7 +541,6 @@ impl fmt::Debug for NameNode {
 
 
 impl ASTNode for NumNode {
-    #[stable(feature="compile",since="0.0.3")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
        match *self {
@@ -610,7 +553,6 @@ impl ASTNode for NumNode {
        }
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT);};
@@ -639,12 +581,10 @@ impl fmt::Debug for NumNode {
 }
 
 impl ASTNode for CharNode {
-    #[stable(feature="compile", since="0.0.7")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Ok(vec![AtomCell(Char(self.value))])
     }
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT);};
@@ -658,7 +598,6 @@ impl ASTNode for StringNode {
     ///
     /// For now, this compiles strings into lists of characters.
     /// Eventually this may change.
-    #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         let chars: Vec<u8> = self.value.clone().into();
@@ -667,7 +606,6 @@ impl ASTNode for StringNode {
                 chars.into_iter().map(|c| AtomCell(Char(c as char)))
                 )) ])
     }
-    #[stable(feature = "ast", since = "0.0.2")]
     #[allow(unused_variables)]
     fn print_level(&self, level: usize) -> String {
         format!("String: \"{}\"\n", self.value)
@@ -676,7 +614,6 @@ impl ASTNode for StringNode {
 
 
 impl ASTNode for BoolNode {
-    #[stable(feature="compile", since="0.0.6")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
         match self.value {
@@ -685,7 +622,6 @@ impl ASTNode for BoolNode {
         }
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT);};
