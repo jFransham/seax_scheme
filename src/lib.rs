@@ -22,9 +22,8 @@ extern crate parser;
 extern crate ast;
 
 use seax_svm::List;
-use seax::cell::SVMCell;
+use seax_svm::cell::SVMCell;
 use seax::compiler_tools::ForkTable;
-use seax::compiler_tools::ast::ASTNode;
 
 use std::iter::FromIterator;
 

@@ -5,3 +5,6 @@ authors = ["Hawk Weisman <hi@hawkweisman.me>"]
 
 [dependencies.seax_util]
 git = "https://github.com/hawkw/seax_util.git"
+
+[dependencies.seax_svm]
+git = "https://github.com/jFransham/seax_svm.git"

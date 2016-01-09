@@ -5,17 +5,19 @@
 #![feature(slice_patterns)]
 
 #[macro_use] extern crate seax_util as seax;
+extern crate seax_svm;
 
-use seax::cell::SVMCell;
-use seax::cell::Atom::*;
-use seax::cell::Inst::*;
-use seax::cell::SVMCell::*;
+use seax_svm::SVMCell;
+use seax_svm::SVMCell::*;
 
-use seax::list::{List,Stack};
-use seax::list::{Cons,Nil};
+use seax_svm::cell::Atom::*;
+use seax_svm::cell::Inst::*;
 
-use seax::compiler_tools::ast::{INDENT,ASTNode};
-use seax::compiler_tools::{SymTable, CompileResult, Scope};
+use seax_svm::slist::{List,Stack};
+use seax_svm::slist::{Cons,Nil};
+
+use seax::compiler_tools::ast::INDENT;
+use seax::compiler_tools::{SymTable, Scope};
 
 use self::ExprNode::*;
 use self::NumNode::*;
@@ -24,6 +26,37 @@ use std::fmt;
 use std::fmt::Write;
 use std::iter::FromIterator;
 use std::convert::Into;
+
+pub type CompileResult = Result<Vec<SVMCell>, String>;
+
+pub trait ASTNode {
+    /// Compile this node to a list of SVM expressions
+    fn compile<'a>(&'a self,
+                   state: &'a SymTable<'a>)
+                   -> CompileResult;
+
+    /// Pretty-print this node to a String.
+    ///
+    /// This should start with this node indented zero spaces, and recursively
+    /// walk the tree downward, increasing the indentation level by `INDENT`
+    /// every step.
+    fn prettyprint(&self) -> String {
+        self.print_level(0)
+    }
+
+    /// Pretty-print this node at the desired indent level
+    fn print_level(&self, level: usize) -> String;
+}
+
+#[cfg_attr(feature = "unstable",
+    stable(feature = "ast", since = "0.0.1") )]
+impl fmt::Debug for ASTNode {
+    #[cfg_attr(feature = "unstable",
+        stable(feature = "ast", since = "0.0.1") )]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
 
 /// Expression
 ///
