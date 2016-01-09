@@ -16,11 +16,12 @@
 //! Seax Scheme.
 
 #[macro_use] extern crate seax_util as seax;
+extern crate seax_svm;
 #[macro_use] extern crate log;
 extern crate parser;
 extern crate ast;
 
-use seax::List;
+use seax_svm::List;
 use seax::cell::SVMCell;
 use seax::compiler_tools::ForkTable;
 use seax::compiler_tools::ast::ASTNode;

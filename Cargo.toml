@@ -12,6 +12,9 @@ keywords = ["vm","lisp","languages"]
 [dependencies]
 log = "0.3.1"
 
+[dependencies.seax_svm]
+git = "https://github.com/jFransham/seax_svm.git"
+
 [dependencies.seax_util]
 git = "https://github.com/hawkw/seax_util.git"
 
